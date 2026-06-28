@@ -4,11 +4,11 @@ This document outlines the upcoming features and technical improvements planned 
 
 ## Planned Features
 
-- [ ] **Browser Storage Persistence**
+- [x] **Browser Storage Persistence**
   - Save the application's `$state` (unicorn and girl customizations, as well as their $x,y$ positions) to the browser's `localStorage` or `sessionStorage`.
   - Automatically load and hydrate the state when the user returns to the app, ensuring their magical stable is never lost.
 
-- [ ] **Version Control & GitHub Setup**
+- [x] **Version Control & GitHub Setup**
   - Initialize a local `git` repository for the project.
   - Stage and commit the current scaffolding and custom components.
   - Push the repository to GitHub for backup and potential open-source sharing.
