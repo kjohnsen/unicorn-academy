@@ -74,7 +74,7 @@
 
 	<!-- Render all roaming unicorns and girls -->
 	{#each gameState.unicorns as unicorn (unicorn.id)}
-		<div class="roamer {draggingId === unicorn.id ? 'dragging' : ''}" 
+		<div class="roamer {draggingId === unicorn.id && draggingType === 'unicorn' ? 'dragging' : ''}" 
 			style="left: {unicorn.x}%; top: {unicorn.y}%; width: 140px; height: 120px; transform: translate(-50%, -80%);"
 			onpointerdown={(e) => handlePointerDown(e, unicorn.id, 'unicorn')}>
 			<UnicornSvg coatColor={unicorn.coatColor} maneColor={unicorn.maneColor} symbol={unicorn.symbol} />
@@ -83,7 +83,7 @@
 	{/each}
 
 	{#each gameState.girls as girl (girl.id)}
-		<div class="roamer {draggingId === girl.id ? 'dragging' : ''}" 
+		<div class="roamer {draggingId === girl.id && draggingType === 'girl' ? 'dragging' : ''}" 
 			style="left: {girl.x}%; top: {girl.y}%; width: 70px; height: 90px; transform: translate(-50%, -80%);"
 			onpointerdown={(e) => handlePointerDown(e, girl.id, 'girl')}>
 			<GirlSvg skinColor={girl.skinColor} hairColor={girl.hairColor} hairStyle={girl.hairStyle} outfitColor={girl.outfitColor} />
