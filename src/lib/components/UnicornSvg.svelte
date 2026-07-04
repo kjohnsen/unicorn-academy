@@ -4,13 +4,15 @@
 		maneColor = '#ffb3d9', 
 		symbol = '⭐️',
 		width = "100%",
-		height = "100%"
+		height = "100%",
+		hasWings = false
 	} = $props<{
 		coatColor?: string;
 		maneColor?: string;
 		symbol?: string;
 		width?: string;
 		height?: string;
+		hasWings?: boolean;
 	}>();
 </script>
 
@@ -23,9 +25,19 @@
 		<!-- Tail -->
 		<path d="M 25,45 Q 0,60 15,85 Q 30,60 35,45 Z" fill={maneColor} />
 		
+		{#if hasWings}
+			<!-- Wing Back -->
+			<path class="wing wing-back" d="M 60,40 Q 50,10 20,5 Q 40,25 50,40 Z" fill={coatColor} filter="brightness(0.85)" opacity="0.9" />
+		{/if}
+
 		<!-- Body -->
 		<rect x="30" y="35" width="60" height="30" rx="15" fill={coatColor} />
 		
+		{#if hasWings}
+			<!-- Wing Front -->
+			<path class="wing wing-front" d="M 55,45 Q 40,10 5,0 Q 30,25 45,45 Z" fill={coatColor} opacity="0.95" stroke={maneColor} stroke-width="1" />
+		{/if}
+
 		<!-- Legs Front -->
 		<rect x="35" y="55" width="8" height="35" rx="4" fill={coatColor} />
 		<rect x="70" y="55" width="8" height="35" rx="4" fill={coatColor} />
@@ -48,7 +60,7 @@
 		<circle cx="98" cy="17" r="2.5" fill="#1a0b2e" />
 		
 		<!-- Cutie Mark Symbol -->
-		<text x="45" y="55" font-size="14" text-anchor="middle" dominant-baseline="middle">{symbol}</text>
+		<text x="45" y="55" font-size="14" text-anchor="middle" dominant-baseline="middle" style="user-select: none; pointer-events: none;">{symbol}</text>
 	</g>
 </svg>
 
@@ -60,5 +72,22 @@
 	@keyframes breathing {
 		0%, 100% { transform: scaleY(1); }
 		50% { transform: scaleY(1.02) translateY(-1px); }
+	}
+	.wing {
+		transform-origin: 55px 45px;
+	}
+	.wing-front {
+		animation: flap-front 3s ease-in-out infinite;
+	}
+	.wing-back {
+		animation: flap-back 3s ease-in-out infinite;
+	}
+	@keyframes flap-front {
+		0%, 100% { transform: rotate(0deg); }
+		50% { transform: rotate(-15deg); }
+	}
+	@keyframes flap-back {
+		0%, 100% { transform: rotate(0deg); }
+		50% { transform: rotate(-25deg); }
 	}
 </style>

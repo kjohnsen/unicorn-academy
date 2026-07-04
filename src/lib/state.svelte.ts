@@ -6,6 +6,7 @@ export interface Unicorn {
 	symbol: string;
 	x: number;
 	y: number;
+	hasWings?: boolean;
 }
 
 export interface Girl {
@@ -17,11 +18,12 @@ export interface Girl {
 	outfitColor: string;
 	x: number;
 	y: number;
+	ridingUnicornId?: string;
 }
 
 class GameState {
 	unicorns = $state<Unicorn[]>([
-		{ id: '1', name: 'Stardust', coatColor: '#ffffff', maneColor: '#ffb3d9', symbol: '⭐️', x: 20, y: 60 },
+		{ id: '1', name: 'Stardust', coatColor: '#ffffff', maneColor: '#ffb3d9', symbol: '⭐️', x: 20, y: 60, hasWings: true },
 		{ id: '2', name: 'Moonbeam', coatColor: '#e6e6fa', maneColor: '#8a2be2', symbol: '🌙', x: 70, y: 50 },
 		{ id: '3', name: 'Sunburst', coatColor: '#ffffe0', maneColor: '#ffa500', symbol: '⚡️', x: 45, y: 80 }
 	]);

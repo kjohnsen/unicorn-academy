@@ -25,6 +25,13 @@
 		draggingId = id;
 		draggingType = type;
 		e.currentTarget.setPointerCapture(e.pointerId);
+
+		if (type === 'girl') {
+			const girl = gameState.girls.find(g => g.id === id);
+			if (girl && girl.ridingUnicornId) {
+				gameState.updateGirl(id, { ridingUnicornId: undefined });
+			}
+		}
 	}
 
 	function handlePointerMove(e: PointerEvent) {
@@ -36,6 +43,10 @@
 
 		if (draggingType === 'unicorn') {
 			gameState.updateUnicorn(draggingId, { x: newX, y: newY });
+			const ridingGirls = gameState.girls.filter(g => g.ridingUnicornId === draggingId);
+			for (const girl of ridingGirls) {
+				gameState.updateGirl(girl.id, { x: newX, y: newY - 3 });
+			}
 		} else {
 			gameState.updateGirl(draggingId, { x: newX, y: newY });
 		}
@@ -43,6 +54,27 @@
 
 	function handlePointerUp(e: PointerEvent) {
 		if (!draggingId) return;
+
+		if (draggingType === 'girl') {
+			const girl = gameState.girls.find(g => g.id === draggingId);
+			if (girl) {
+				const threshold = 12; // 12% screen distance threshold
+				for (const unicorn of gameState.unicorns) {
+					const dx = girl.x - unicorn.x;
+					const dy = girl.y - unicorn.y;
+					const distance = Math.sqrt(dx * dx + dy * dy);
+					if (distance < threshold) {
+						gameState.updateGirl(girl.id, { 
+							ridingUnicornId: unicorn.id, 
+							x: unicorn.x, 
+							y: unicorn.y - 3 
+						});
+						break;
+					}
+				}
+			}
+		}
+
 		e.currentTarget.releasePointerCapture(e.pointerId);
 		draggingId = null;
 		draggingType = null;
@@ -77,14 +109,14 @@
 		<div class="roamer {draggingId === unicorn.id && draggingType === 'unicorn' ? 'dragging' : ''}" 
 			style="left: {unicorn.x}%; top: {unicorn.y}%; width: 140px; height: 120px; transform: translate(-50%, -80%);"
 			onpointerdown={(e) => handlePointerDown(e, unicorn.id, 'unicorn')}>
-			<UnicornSvg coatColor={unicorn.coatColor} maneColor={unicorn.maneColor} symbol={unicorn.symbol} />
+			<UnicornSvg coatColor={unicorn.coatColor} maneColor={unicorn.maneColor} symbol={unicorn.symbol} hasWings={unicorn.hasWings} />
 			<div class="roamer-name">{unicorn.name}</div>
 		</div>
 	{/each}
 
 	{#each gameState.girls as girl (girl.id)}
 		<div class="roamer {draggingId === girl.id && draggingType === 'girl' ? 'dragging' : ''}" 
-			style="left: {girl.x}%; top: {girl.y}%; width: 70px; height: 90px; transform: translate(-50%, -80%);"
+			style="left: {girl.x}%; top: {girl.y}%; width: 70px; height: 90px; transform: translate(-50%, -80%); z-index: {girl.ridingUnicornId === draggingId && draggingType === 'unicorn' ? 101 : girl.ridingUnicornId ? 6 : 5};"
 			onpointerdown={(e) => handlePointerDown(e, girl.id, 'girl')}>
 			<GirlSvg skinColor={girl.skinColor} hairColor={girl.hairColor} hairStyle={girl.hairStyle} outfitColor={girl.outfitColor} />
 			<div class="roamer-name">{girl.name}</div>
@@ -118,7 +150,7 @@
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div class="card glass-panel" onclick={() => editingUnicornId = unicorn.id}>
 						<div class="avatar">
-							<UnicornSvg coatColor={unicorn.coatColor} maneColor={unicorn.maneColor} symbol={unicorn.symbol} />
+							<UnicornSvg coatColor={unicorn.coatColor} maneColor={unicorn.maneColor} symbol={unicorn.symbol} hasWings={unicorn.hasWings} />
 						</div>
 						<h3>{unicorn.name}</h3>
 					</div>
@@ -154,11 +186,17 @@
 							{/each}
 						</div>
 					</div>
+					<div class="form-group" style="flex-direction: row; align-items: center; justify-content: space-between; margin-top: 1rem;">
+						<label for="uwings" style="margin: 0; cursor: pointer;">Alicorn Upgrade (Wings!)</label>
+						<input id="uwings" type="checkbox" checked={selectedUnicorn.hasWings || false} 
+							onchange={(e) => gameState.updateUnicorn(selectedUnicorn!.id, { hasWings: e.currentTarget.checked })}
+							style="width: 24px; height: 24px; cursor: pointer;" />
+					</div>
 				</div>
 				<div class="preview-panel glass-panel">
 					<h3>Live Preview</h3>
 					<div class="large-preview">
-						<UnicornSvg coatColor={selectedUnicorn.coatColor} maneColor={selectedUnicorn.maneColor} symbol={selectedUnicorn.symbol} />
+						<UnicornSvg coatColor={selectedUnicorn.coatColor} maneColor={selectedUnicorn.maneColor} symbol={selectedUnicorn.symbol} hasWings={selectedUnicorn.hasWings} />
 					</div>
 				</div>
 			</div>
@@ -248,6 +286,8 @@
 		overflow: hidden;
 		background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 40%, #7CFC00 40%, #228B22 100%);
 		touch-action: none;
+		user-select: none;
+		-webkit-user-select: none;
 	}
 
 	.sky {
